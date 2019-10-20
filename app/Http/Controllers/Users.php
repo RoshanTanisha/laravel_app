@@ -2,25 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class Users extends Controller
 {
-    public function signup(Request $request) {
-        $request_data = json_decode($request->getContent());
-        $query_result = DB::table('users')->insert([
-            [
-                "name"=>$request_data[0]->fullName, 
-                "email"=>$request_data[0]->email,
-                "password"=>$request_data[0]->password
-            ]
-        ]);
-        var_dump($query_result);
-        if ($query_result == 1) {
-            return json_encode("[{'status': 'success'}]");
-        }else {
-            return json_encode("[{'status': 'error'}]");
+    // signup function
+    public function signup(Request $data){
+        $user = new User;
+        $user->name = $data[0]['fullName'];
+        $user->email = $data[0]['email'];
+        $user->password = $data[0]['password'];
+
+        try{
+            $returnValue = $user->save();
+            if ($returnValue) {
+                return json_encode(["success" => true, "message" => "record created"]);
+            } else {
+                return json_encode(["success" => false, "message" => "no record created"]);
+            }
+        } catch(\Exception $e) {
+            return json_encode(["success" => false, "message" => "user already exists or value entered are not valid"]);
+        }
+    }
+
+    public function login(Request $data) {
+        $user = User::find($data[0]['email']);
+        if ($user != null) {
+            if ($user['password'] == $data[0]['password']) {
+     
+                return json_encode(["success" => true, "message" => "login successful"]);
+            } else {
+                return json_encode(["success" => false, "message" => "password do not match"]);
+            }
+        } else {
+            return json_encode(["success" => false, "message" => "user not registered"]);
         }
     }
 }

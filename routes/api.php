@@ -18,5 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware('api')->group(function(){
-	Route::post('signup', 'Users@signup');
+	Route::post('/signup', 'Users@signup');
+	Route::post('/login', 'Users@login');
 });

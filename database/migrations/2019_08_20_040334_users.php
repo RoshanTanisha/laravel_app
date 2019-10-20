@@ -15,7 +15,7 @@ class Users extends Migration
     {
         Schema::create('users', function(Blueprint $table){
             $table->string('name')->nullable(false);
-            $table->string('email')->unique();
+            $table->string('email', 128)->unique();
             $table->string('password')->nullable(false);
         });
     }
